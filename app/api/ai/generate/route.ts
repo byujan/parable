@@ -51,7 +51,7 @@ export async function POST(request: Request) {
     const aiProvider = getAIProvider()
     const template = await aiProvider.generateTemplate(prompt)
 
-    return NextResponse.json(template)
+    return NextResponse.json({ template })
   } catch (error) {
     console.error('Error generating template:', error)
 

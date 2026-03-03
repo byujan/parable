@@ -11,7 +11,7 @@ export async function POST(
 ) {
   try {
     // Auth check
-    const authClient = createServerAuthClient()
+    const authClient = await createServerAuthClient()
     const { data: { user }, error: authError } = await authClient.auth.getUser()
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

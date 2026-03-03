@@ -8,7 +8,7 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 export async function POST(request: NextRequest) {
   try {
     // Auth check
-    const authClient = createServerAuthClient()
+    const authClient = await createServerAuthClient()
     const { data: { user }, error: authError } = await authClient.auth.getUser()
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

@@ -39,7 +39,15 @@ export class OllamaProvider implements AIProvider {
       try {
         parsedResponse = JSON.parse(content)
       } catch (parseError) {
-        throw new Error(`Failed to parse AI response as JSON: ${content}`)
+        throw new Error(`Failed to parse AI response as JSON. The model returned invalid JSON.`)
+      }
+
+      // Validate required fields
+      const requiredFields = ['subject', 'html_body', 'text_body', 'sender_name', 'sender_email'] as const
+      for (const field of requiredFields) {
+        if (!parsedResponse[field] || typeof parsedResponse[field] !== 'string') {
+          throw new Error(`AI response missing or invalid field: ${field}`)
+        }
       }
 
       // Wrap html_body with simulation template comment

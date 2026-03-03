@@ -3,8 +3,8 @@ import { cookies } from "next/headers"
 
 type CookieToSet = { name: string; value: string; options?: Record<string, unknown> }
 
-export function createClient() {
-  const cookieStore = cookies()
+export async function createClient() {
+  const cookieStore = await cookies()
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -29,8 +29,8 @@ export function createClient() {
   )
 }
 
-export function createServiceClient() {
-  const cookieStore = cookies()
+export async function createServiceClient() {
+  const cookieStore = await cookies()
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

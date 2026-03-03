@@ -42,7 +42,7 @@ export function AIGenerateDialog() {
   const supabase = createClient();
 
   const [formData, setFormData] = useState({
-    category: "urgency",
+    category: "credential_harvest",
     difficulty: "medium",
     company_name: "",
     industry: "",
@@ -60,15 +60,24 @@ export function AIGenerateDialog() {
         body: JSON.stringify(formData),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error("Failed to generate template");
+        throw new Error(data.error || "Failed to generate template");
       }
 
-      const data = await response.json();
+      if (!data.template) {
+        throw new Error("No template returned from AI. Please try again.");
+      }
+
       setGenerated(data.template);
     } catch (error) {
       console.error("Error generating template:", error);
-      alert("Failed to generate template. Please try again.");
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Failed to generate template. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -93,7 +102,7 @@ export function AIGenerateDialog() {
           difficulty: formData.difficulty,
           html_body: generated.html_body,
           text_body: generated.text_body,
-          ai_generated: true,
+          is_ai_generated: true,
         },
       ]);
 
@@ -104,7 +113,7 @@ export function AIGenerateDialog() {
 
       // Reset form
       setFormData({
-        category: "urgency",
+        category: "credential_harvest",
         difficulty: "medium",
         company_name: "",
         industry: "",
@@ -113,7 +122,11 @@ export function AIGenerateDialog() {
       setGenerated(null);
     } catch (error) {
       console.error("Error saving template:", error);
-      alert("Failed to save template. Please try again.");
+      alert(
+        error instanceof Error
+          ? `Failed to save template: ${error.message}`
+          : "Failed to save template. Please try again."
+      );
     } finally {
       setSaving(false);
     }
@@ -153,11 +166,12 @@ export function AIGenerateDialog() {
                     <SelectItem value="credential_harvest">
                       Credential Harvest
                     </SelectItem>
-                    <SelectItem value="malware">Malware</SelectItem>
-                    <SelectItem value="urgency">Urgency</SelectItem>
-                    <SelectItem value="curiosity">Curiosity</SelectItem>
-                    <SelectItem value="authority">Authority</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
+                    <SelectItem value="malware_download">
+                      Malware Download
+                    </SelectItem>
+                    <SelectItem value="data_entry">Data Entry</SelectItem>
+                    <SelectItem value="link_click">Link Click</SelectItem>
+                    <SelectItem value="attachment">Attachment</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

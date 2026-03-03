@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { MoreHorizontal, Edit, Trash2, Sparkles, Loader2 } from "lucide-react";
+import { MoreHorizontal, Edit, Trash2, Sparkles, Loader2, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -48,6 +48,7 @@ interface VariantTemplate {
 }
 
 export function TemplateActions({ template }: TemplateActionsProps) {
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [variantsDialogOpen, setVariantsDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -114,7 +115,7 @@ export function TemplateActions({ template }: TemplateActionsProps) {
         difficulty: template.difficulty,
         html_body: variant.html_body,
         text_body: variant.text_body,
-        ai_generated: true,
+        is_ai_generated: true,
       }));
 
       const { error } = await supabase
@@ -145,6 +146,10 @@ export function TemplateActions({ template }: TemplateActionsProps) {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => setPreviewOpen(true)}>
+            <Eye className="h-4 w-4 mr-2" />
+            View
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setEditDialogOpen(true)}>
             <Edit className="h-4 w-4 mr-2" />
             Edit
@@ -170,6 +175,85 @@ export function TemplateActions({ template }: TemplateActionsProps) {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      {/* Preview Dialog */}
+      <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{template.name}</DialogTitle>
+            <DialogDescription>
+              Template preview &mdash;{" "}
+              {template.category.replace(/_/g, " ")} &bull;{" "}
+              {template.difficulty} difficulty
+              {template.is_ai_generated ? " \u00B7 AI generated" : ""}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="rounded-lg border bg-muted/50 p-4 space-y-3">
+              <div>
+                <Label className="text-xs text-muted-foreground">Subject</Label>
+                <p className="font-medium">{template.subject}</p>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-xs text-muted-foreground">
+                    Sender Name
+                  </Label>
+                  <p className="font-medium">{template.sender_name}</p>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">
+                    Sender Email
+                  </Label>
+                  <p className="font-mono text-sm">{template.sender_email}</p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <Label className="text-xs text-muted-foreground mb-2 block">
+                Email Body (HTML Preview)
+              </Label>
+              <div className="max-h-80 overflow-y-auto rounded-lg border bg-background p-4">
+                <div
+                  className="prose prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{ __html: template.html_body }}
+                />
+              </div>
+            </div>
+
+            {template.text_body && (
+              <div>
+                <Label className="text-xs text-muted-foreground mb-2 block">
+                  Plain Text Version
+                </Label>
+                <pre className="max-h-40 overflow-y-auto rounded-lg border bg-muted p-4 text-sm whitespace-pre-wrap font-mono">
+                  {template.text_body}
+                </pre>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setPreviewOpen(false)}
+            >
+              Close
+            </Button>
+            <Button
+              onClick={() => {
+                setPreviewOpen(false);
+                setEditDialogOpen(true);
+              }}
+            >
+              <Edit className="h-4 w-4 mr-2" />
+              Edit Template
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Dialog */}
       {editDialogOpen && (

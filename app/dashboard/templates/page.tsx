@@ -13,6 +13,7 @@ import { Sparkles, Plus } from "lucide-react";
 import { TemplateFormDialog } from "@/components/templates/template-form-dialog";
 import { AIGenerateDialog } from "@/components/templates/ai-generate-dialog";
 import { TemplateActions } from "@/components/templates/template-actions";
+import { TemplatePreviewButton } from "@/components/templates/template-preview-button";
 
 export default async function TemplatesPage() {
   const supabase = await createClient();
@@ -25,11 +26,10 @@ export default async function TemplatesPage() {
   const getCategoryColor = (category: string) => {
     const colors: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
       credential_harvest: "destructive",
-      malware: "destructive",
-      urgency: "default",
-      curiosity: "secondary",
-      authority: "default",
-      other: "outline",
+      malware_download: "destructive",
+      data_entry: "default",
+      link_click: "secondary",
+      attachment: "default",
     };
     return colors[category] || "outline";
   };
@@ -93,7 +93,11 @@ export default async function TemplatesPage() {
             <TableBody>
               {templates.map((template) => (
                 <TableRow key={template.id}>
-                  <TableCell className="font-medium">{template.name}</TableCell>
+                  <TableCell>
+                    <TemplatePreviewButton template={template}>
+                      {template.name}
+                    </TemplatePreviewButton>
+                  </TableCell>
                   <TableCell className="max-w-md truncate">
                     {template.subject}
                   </TableCell>
@@ -108,7 +112,7 @@ export default async function TemplatesPage() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {template.ai_generated ? (
+                    {template.is_ai_generated ? (
                       <Badge variant="outline" className="gap-1">
                         <Sparkles className="h-3 w-3" />
                         AI
