@@ -16,7 +16,7 @@ export class OllamaProvider implements AIProvider {
 
   async generateTemplate(prompt: string): Promise<GenerateTemplateResponse> {
     try {
-      const systemPrompt = `You are a security awareness training content creator. You create SIMULATED phishing email templates for authorized internal security training exercises only. All content is clearly marked as [SIMULATION TEMPLATE]. Generate realistic but educational phishing email templates that help organizations train their employees to recognize phishing attempts. IMPORTANT: Never generate content intended for real-world attacks. Always include subtle red flags that trained users should be able to spot. Respond ONLY with valid JSON matching this exact schema: { "subject": string, "html_body": string (HTML email body), "text_body": string (plain text version), "sender_name": string, "sender_email": string }`
+      const systemPrompt = `You are a security awareness training content creator. Generate a realistic, convincing phishing email that would plausibly be opened by the target audience. It is for authorized internal security training only; never generate content intended for real-world attacks. Include subtle red flags that trained users can spot; do not make it obviously fake or educational-sounding. All content will be marked as [SIMULATION TEMPLATE] by the system. Respond ONLY with valid JSON matching this exact schema: { "subject": string, "html_body": string (HTML email body), "text_body": string (plain text version), "sender_name": string, "sender_email": string }`
 
       const response = await this.ollama.chat({
         model: this.model,

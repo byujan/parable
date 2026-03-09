@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createClient } from "@/lib/supabase/client";
+import type { CampaignContext } from "@/lib/types";
 
 interface GeneratedTemplate {
   subject: string;
@@ -33,8 +34,21 @@ interface GeneratedTemplate {
   text_body: string;
 }
 
-export function AIGenerateDialog() {
-  const [open, setOpen] = useState(false);
+interface AIGenerateDialogProps {
+  /** When provided, dialog is controlled by parent (no trigger). */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  /** When provided, sent to API as campaign_context for campaign-aware generation. */
+  campaignContext?: CampaignContext;
+}
+
+export function AIGenerateDialog(props: AIGenerateDialogProps = {}) {
+  const { open: controlledOpen, onOpenChange: controlledOnOpenChange, campaignContext } = props;
+  const [internalOpen, setInternalOpen] = useState(false);
+
+  const isControlled = controlledOpen !== undefined && controlledOnOpenChange !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+  const setOpen = isControlled ? controlledOnOpenChange! : setInternalOpen;
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [generated, setGenerated] = useState<GeneratedTemplate | null>(null);
@@ -47,6 +61,10 @@ export function AIGenerateDialog() {
     company_name: "",
     industry: "",
     additional_context: "",
+    impersonated_sender: "",
+    scenario: "",
+    urgency: "medium" as "low" | "medium" | "high",
+    target_audience: "",
   });
 
   const handleGenerate = async () => {
@@ -54,10 +72,14 @@ export function AIGenerateDialog() {
     setGenerated(null);
 
     try {
+      const body: Record<string, unknown> = { ...formData };
+      if (campaignContext) {
+        body.campaign_context = campaignContext;
+      }
       const response = await fetch("/api/ai/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(body),
       });
 
       const data = await response.json();
@@ -118,6 +140,10 @@ export function AIGenerateDialog() {
         company_name: "",
         industry: "",
         additional_context: "",
+        impersonated_sender: "",
+        scenario: "",
+        urgency: "medium",
+        target_audience: "",
       });
       setGenerated(null);
     } catch (error) {
@@ -134,17 +160,20 @@ export function AIGenerateDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>
-          <Sparkles className="h-4 w-4 mr-2" />
-          Generate with AI
-        </Button>
-      </DialogTrigger>
+      {!isControlled && (
+        <DialogTrigger asChild>
+          <Button>
+            <Sparkles className="h-4 w-4 mr-2" />
+            Generate with AI
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Generate Template with AI</DialogTitle>
           <DialogDescription>
-            Provide context and parameters to generate a phishing simulation template.
+            Describe the phishing scenario so the AI can generate a convincing,
+            realistic template. The more detail you provide, the better the result.
           </DialogDescription>
         </DialogHeader>
 
@@ -196,7 +225,79 @@ export function AIGenerateDialog() {
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="company_name">Company Name</Label>
+              <Label htmlFor="impersonated_sender">Impersonated Sender (Optional)</Label>
+              <Select
+                value={formData.impersonated_sender || "_none"}
+                onValueChange={(value) =>
+                  setFormData({
+                    ...formData,
+                    impersonated_sender: value === "_none" ? "" : value,
+                  })
+                }
+              >
+                <SelectTrigger id="impersonated_sender">
+                  <SelectValue placeholder="Who is the email pretending to be?" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="_none">— Select —</SelectItem>
+                  <SelectItem value="IT Support">IT Support</SelectItem>
+                  <SelectItem value="HR">HR</SelectItem>
+                  <SelectItem value="Finance">Finance</SelectItem>
+                  <SelectItem value="Vendor">Vendor</SelectItem>
+                  <SelectItem value="Executive / CEO">Executive / CEO</SelectItem>
+                  <SelectItem value="External service">External service</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="scenario">Scenario / Hook (Optional)</Label>
+              <Input
+                id="scenario"
+                value={formData.scenario}
+                onChange={(e) =>
+                  setFormData({ ...formData, scenario: e.target.value })
+                }
+                placeholder="e.g. IT asking to verify credentials before account lock"
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="urgency">Urgency (Optional)</Label>
+              <Select
+                value={formData.urgency}
+                onValueChange={(value) =>
+                  setFormData({
+                    ...formData,
+                    urgency: value as "low" | "medium" | "high",
+                  })
+                }
+              >
+                <SelectTrigger id="urgency">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="low">Low</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="target_audience">Target Audience (Optional)</Label>
+              <Input
+                id="target_audience"
+                value={formData.target_audience}
+                onChange={(e) =>
+                  setFormData({ ...formData, target_audience: e.target.value })
+                }
+                placeholder="e.g. All staff, Finance, New hires"
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="company_name">Company Name (Optional)</Label>
               <Input
                 id="company_name"
                 value={formData.company_name}
@@ -208,7 +309,7 @@ export function AIGenerateDialog() {
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="industry">Industry</Label>
+              <Label htmlFor="industry">Industry (Optional)</Label>
               <Input
                 id="industry"
                 value={formData.industry}
