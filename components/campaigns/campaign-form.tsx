@@ -16,7 +16,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { Template, LandingPage, RecipientList } from "@/lib/types";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { CheckCircle2, Send, Save, TestTube } from "lucide-react";
+import { CheckCircle2, Send, Save, TestTube, Sparkles } from "lucide-react";
+import { AIGenerateDialog } from "@/components/templates/ai-generate-dialog";
 
 interface CampaignFormProps {
   templates: Template[];
@@ -38,9 +39,11 @@ export function CampaignForm({
   const [testLoading, setTestLoading] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [aiDialogOpen, setAiDialogOpen] = useState(false);
   const router = useRouter();
 
   const selectedList = recipientLists.find((list) => list.id === recipientListId);
+  const canGenerateForCampaign = Boolean(name.trim() && selectedList);
 
   const handleTestSend = async () => {
     if (!templateId || !landingPageId) {
@@ -201,18 +204,47 @@ export function CampaignForm({
 
           <div className="space-y-2">
             <Label htmlFor="template">Email Template *</Label>
-            <Select value={templateId} onValueChange={setTemplateId}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a template" />
-              </SelectTrigger>
-              <SelectContent>
-                {templates.map((template) => (
-                  <SelectItem key={template.id} value={template.id}>
-                    {template.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex flex-col gap-2">
+              <Select value={templateId} onValueChange={setTemplateId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a template" />
+                </SelectTrigger>
+                <SelectContent>
+                  {templates.map((template) => (
+                    <SelectItem key={template.id} value={template.id}>
+                      {template.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setAiDialogOpen(true)}
+                disabled={!canGenerateForCampaign}
+              >
+                <Sparkles className="h-4 w-4 mr-2" />
+                Generate a template for this campaign
+              </Button>
+              {!canGenerateForCampaign && (
+                <p className="text-xs text-muted-foreground">
+                  Enter a campaign name and select a recipient list to enable.
+                </p>
+              )}
+            </div>
+            <AIGenerateDialog
+              open={aiDialogOpen}
+              onOpenChange={setAiDialogOpen}
+              campaignContext={
+                canGenerateForCampaign
+                  ? {
+                      campaign_name: name.trim(),
+                      recipient_list_name: selectedList?.name,
+                    }
+                  : undefined
+              }
+            />
           </div>
 
           <div className="space-y-2">

@@ -117,12 +117,25 @@ export interface TrainingModule {
 // AI generation types
 // ============================================================
 
+export type TemplateUrgency = 'low' | 'medium' | 'high'
+
+export interface CampaignContext {
+  campaign_name: string
+  recipient_list_name?: string
+  audience_summary?: string
+}
+
 export interface GenerateTemplateRequest {
   category: TemplateCategory
   difficulty: TemplateDifficulty
   company_name?: string
   industry?: string
   additional_context?: string
+  impersonated_sender?: string
+  scenario?: string
+  urgency?: TemplateUrgency
+  target_audience?: string
+  campaign_context?: CampaignContext
 }
 
 export interface GenerateTemplateResponse {

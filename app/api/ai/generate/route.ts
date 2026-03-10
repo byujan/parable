@@ -21,7 +21,18 @@ export async function POST(request: Request) {
 
     // Parse request body
     const body: GenerateTemplateRequest = await request.json()
-    const { category, difficulty, company_name, industry, additional_context } = body
+    const {
+      category,
+      difficulty,
+      company_name,
+      industry,
+      additional_context,
+      impersonated_sender,
+      scenario,
+      urgency,
+      target_audience,
+      campaign_context,
+    } = body
 
     if (!category || !difficulty) {
       return NextResponse.json(
@@ -30,22 +41,42 @@ export async function POST(request: Request) {
       )
     }
 
-    // Build prompt from request fields
-    let prompt = `Generate a ${difficulty} difficulty phishing email template for the category: ${category}.`
-
+    // Build structured prompt from request fields
+    const parts: string[] = []
+    if (impersonated_sender) {
+      parts.push(`Impersonated sender: ${impersonated_sender}.`)
+    }
+    if (scenario) {
+      parts.push(`Scenario: ${scenario}.`)
+    }
+    if (urgency) {
+      parts.push(`Urgency/tone: ${urgency}.`)
+    }
+    if (target_audience) {
+      parts.push(`Target audience: ${target_audience}.`)
+    }
     if (company_name) {
-      prompt += ` The target company is ${company_name}.`
+      parts.push(`Company: ${company_name}.`)
     }
-
     if (industry) {
-      prompt += ` The company is in the ${industry} industry.`
+      parts.push(`Industry: ${industry}.`)
     }
-
+    parts.push(`Category: ${category}. Difficulty: ${difficulty}.`)
+    if (campaign_context) {
+      const campaignParts: string[] = [`Campaign: ${campaign_context.campaign_name}`]
+      if (campaign_context.recipient_list_name) {
+        campaignParts.push(`Recipient list: ${campaign_context.recipient_list_name}`)
+      }
+      if (campaign_context.audience_summary) {
+        campaignParts.push(`Audience: ${campaign_context.audience_summary}`)
+      }
+      parts.push(campaignParts.join('. ') + '.')
+    }
     if (additional_context) {
-      prompt += ` Additional context: ${additional_context}`
+      parts.push(`Additional context: ${additional_context}`)
     }
 
-    prompt += ` Remember to include subtle red flags that trained users should be able to spot.`
+    const prompt = `${parts.join(' ')} Generate a realistic phishing email that could fool an untrained user. Include 2–3 subtle red flags that security-trained users can spot.`
 
     // Generate template using AI provider
     const aiProvider = getAIProvider()
