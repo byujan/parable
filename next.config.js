@@ -5,6 +5,11 @@ const nextConfig = {
       bodySizeLimit: '2mb',
     },
   },
+  images: {
+    remotePatterns: [
+      { protocol: 'https', hostname: 'placehold.co', pathname: '/**' },
+    ],
+  },
 }
 
 module.exports = nextConfig
