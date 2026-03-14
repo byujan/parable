@@ -11,6 +11,32 @@ interface PageProps {
   }
 }
 
+/**
+ * Extract the inner content from a full HTML document.
+ * If the HTML contains <body>...</body>, return just the body contents.
+ * Also extracts inline styles from <head> to preserve styling.
+ */
+function extractBodyContent(html: string): { styles: string; body: string } {
+  // Extract <style> tags from anywhere in the document
+  const styleMatches = html.match(/<style[^>]*>[\s\S]*?<\/style>/gi) || []
+  const styles = styleMatches.join('\n')
+
+  // Extract body content
+  const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i)
+  if (bodyMatch) {
+    // Also grab body tag attributes (like style)
+    const bodyTagMatch = html.match(/<body([^>]*)>/i)
+    const bodyAttrs = bodyTagMatch?.[1] || ''
+    return {
+      styles,
+      body: `<div${bodyAttrs}>${bodyMatch[1]}</div>`,
+    }
+  }
+
+  // No body tag — return as-is (might be a fragment)
+  return { styles, body: html }
+}
+
 export default async function PhishingLandingPage({ params, searchParams }: PageProps) {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -52,10 +78,16 @@ export default async function PhishingLandingPage({ params, searchParams }: Page
     `<form$1><input type="hidden" name="token" value="${token}" />`
   )
 
+  const { styles, body } = extractBodyContent(htmlContent)
+
   return (
-    <div className="min-h-screen">
-      <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+    <>
+      {styles && <div dangerouslySetInnerHTML={{ __html: styles }} />}
+      <div
+        className="min-h-screen"
+        dangerouslySetInnerHTML={{ __html: body }}
+      />
       <SimulationDisclosure token={token} />
-    </div>
+    </>
   )
 }

@@ -63,7 +63,7 @@ export function ScrambleTitle() {
 
   return (
     <h1
-      className={`text-9xl font-bold tracking-tight ${isComplete ? "animate-bounce-once" : ""}`}
+      className={`text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-bold tracking-tight ${isComplete ? "animate-bounce-once" : ""}`}
     >
       {chars.map((c, i) => (
         <span key={i}>{c || "\u00A0"}</span>
