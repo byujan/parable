@@ -1,0 +1,30 @@
+{
+  "id": "93067ca1-1b27-4f26-bedb-e9e48a350c60",
+  "target": {
+    "email": "peter@asteriskai.app",
+    "phone": "+15551234567",
+    "first_name": "Peter",
+    "last_name": "Jang",
+    "company": "Acme Corp",
+    "department": "Engineering",
+    "job_title": ""
+  },
+  "scenario": "credential_harvest",
+  "status": "running",
+  "actions": [],
+  "signals": [],
+  "created_at": "2026-03-06T22:00:57.609Z",
+  "updated_at": "2026-03-06T22:00:57.611Z",
+  "config": {
+    "max_actions": 15,
+    "wait_timeout_ms": 300000,
+    "mock_channels": false,
+    "compressed_timing": false,
+    "landing_page_url": "http://localhost:3000/phish/demo",
+    "ai_provider": "ollama",
+    "ai_model": "llama3.2",
+    "allowed_channels": [
+      "email"
+    ]
+  }
+}

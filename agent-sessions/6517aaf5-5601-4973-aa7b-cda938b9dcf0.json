@@ -1,0 +1,32 @@
+{
+  "id": "6517aaf5-5601-4973-aa7b-cda938b9dcf0",
+  "target": {
+    "email": "peterbjang@gmail.com",
+    "phone": "+12014219389",
+    "first_name": "Peter",
+    "last_name": "Jang",
+    "company": "Acme Corp",
+    "department": "Engineering",
+    "job_title": ""
+  },
+  "scenario": "credential_harvest",
+  "status": "completed",
+  "actions": [],
+  "signals": [
+    {
+      "type": "session_started",
+      "timestamp": "2026-03-06T21:15:44.053Z"
+    }
+  ],
+  "created_at": "2026-03-06T21:15:44.052Z",
+  "updated_at": "2026-03-06T21:15:57.727Z",
+  "config": {
+    "max_actions": 15,
+    "wait_timeout_ms": 60000,
+    "mock_channels": true,
+    "compressed_timing": true,
+    "landing_page_url": "http://localhost:3000/phish/demo",
+    "ai_provider": "claude",
+    "ai_model": "claude-sonnet-4-20250514"
+  }
+}

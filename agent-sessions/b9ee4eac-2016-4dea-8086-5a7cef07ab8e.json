@@ -1,0 +1,50 @@
+{
+  "id": "b9ee4eac-2016-4dea-8086-5a7cef07ab8e",
+  "target": {
+    "email": "peter@asteriskai.app",
+    "phone": "+15551234567",
+    "first_name": "Peter",
+    "last_name": "Jang",
+    "company": "Acme Corp",
+    "department": "Engineering",
+    "job_title": ""
+  },
+  "scenario": "credential_harvest",
+  "status": "running",
+  "actions": [
+    {
+      "id": "6f8a306a-abab-41b0-9ca1-f1989369cc93",
+      "channel": "email",
+      "content": "<html><body>Hello Peter Jang,</body></html>",
+      "subject": "Urgent: Security Notification - Critical Update",
+      "sender_name": "Ava Chen, IT Department",
+      "sender_email": "ava.chen@acme corp",
+      "reasoning": "",
+      "timestamp": "2026-03-06T22:02:44.843Z",
+      "result": {
+        "success": true,
+        "provider_id": "ab1b6cf2-0705-4934-917d-3bcd1db1af4d"
+      }
+    }
+  ],
+  "signals": [
+    {
+      "type": "session_started",
+      "timestamp": "2026-03-06T22:02:43.478Z"
+    }
+  ],
+  "created_at": "2026-03-06T22:02:43.471Z",
+  "updated_at": "2026-03-06T22:02:45.069Z",
+  "config": {
+    "max_actions": 15,
+    "wait_timeout_ms": 300000,
+    "mock_channels": false,
+    "compressed_timing": false,
+    "landing_page_url": "http://localhost:3000/phish/demo",
+    "ai_provider": "ollama",
+    "ai_model": "llama3.2",
+    "allowed_channels": [
+      "email"
+    ]
+  }
+}

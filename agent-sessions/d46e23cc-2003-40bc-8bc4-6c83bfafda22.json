@@ -1,0 +1,31 @@
+{
+  "id": "d46e23cc-2003-40bc-8bc4-6c83bfafda22",
+  "target": {
+    "email": "john.smith@acme.com",
+    "phone": "+15551234567",
+    "first_name": "John",
+    "last_name": "Smith",
+    "company": "Acme Corp",
+    "department": "Engineering",
+    "job_title": ""
+  },
+  "scenario": "credential_harvest",
+  "status": "completed",
+  "actions": [],
+  "signals": [
+    {
+      "type": "session_started",
+      "timestamp": "2026-03-06T20:57:31.626Z"
+    }
+  ],
+  "created_at": "2026-03-06T20:57:31.624Z",
+  "updated_at": "2026-03-06T20:57:31.649Z",
+  "config": {
+    "max_actions": 15,
+    "wait_timeout_ms": 60000,
+    "mock_channels": true,
+    "compressed_timing": true,
+    "landing_page_url": "http://localhost:3000/phish/demo",
+    "ai_model": "llama3.2"
+  }
+}
