@@ -2,13 +2,22 @@
 // Database types matching Supabase schema
 // ============================================================
 
-export type UserRole = "admin"
+export type UserRole = "owner" | "admin" | "member"
 
 export interface Profile {
   id: string
   email: string
   full_name: string | null
   role: UserRole
+  organization_id: string | null
+  created_at: string
+}
+
+export interface Organization {
+  id: string
+  name: string
+  slug: string
+  owner_id: string | null
   created_at: string
 }
 
