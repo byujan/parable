@@ -20,7 +20,7 @@ export function FakeEmailFeature() {
           Realistic Phishing Emails, Calls, and Texts
         </h3>
         <p className="mt-3 text-base text-muted-foreground md:text-lg">
-          Reach your team by any means necessary. Our platofrm supports multi medium phishing simulations. 
+          Reach your team by any means necessary. Our platform supports multi medium phishing simulations. 
           Build your own templates or use personalized AI-generated ones.
         </p>
       </div>

@@ -94,7 +94,7 @@ export function LandingPageGenerationFeature() {
           Fake Landing Page Generation
         </h3>
         <p className="mt-3 text-base text-muted-foreground md:text-lg">
-          Create simulation landing pages such as fake login or document-donwload
+          Create simulation landing pages such as fake login or document-download
           that recipients see when they click links in your phishing simulations.
           These pages can be AI built and previewed before send out to your teams.
         </p>
